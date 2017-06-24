@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- 驗證處理，使用表單 -->
+    <bean id="authenticationProcessingFilter" class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter">  
+        <!-- 驗證管理員，處理驗證資訊提供者 -->
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <!-- 驗證失敗URL -->
+        <property name="authenticationFailureUrl" value="/login.jspx?login_error=1"/>
+        <!-- 驗證成功預設URL -->
+        <property name="defaultTargetUrl" value="/secure/index.jspx"/>
+        <!-- 驗證處理的提交位址 -->
+        <property name="filterProcessesUrl" value="/j_acegi_security_check"/>
+    </bean>
+    
+    <!-- 發生驗證錯誤或權限錯誤時的處理 -->
+    <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
+        <property name="authenticationEntryPoint">  
+            <bean class="org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+                <property name="loginFormUrl" value="/login.jspx"/>  
+                <property name="forceHttps" value="false"/>  
+            </bean>
+        </property>
+        <property name="accessDeniedHandler">
+            <bean class="org.acegisecurity.ui.AccessDeniedHandlerImpl">
+                <property name="errorPage" value="/accessDenied.jspx"/>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- 登出處理 -->  
+    <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">  
+        <constructor-arg value="/login.jspx"/> <!-- 登出後的顯示頁面 -->  
+            <constructor-arg>
+               <list>
+                   <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>  
+               </list>
+        </constructor-arg>
+        <!-- 登出的提交位址 -->
+        <property name="filterProcessesUrl" value="/logout.jsp"/>
+    </bean>
+     
+     
+    <!-- 驗證管理員，管理驗證資訊提供者 -->
+   	<bean id="authenticationManager" class="org.acegisecurity.providers.ProviderManager">
+      	<property name="providers"><!--  可有多個提供者,其中一個驗證通過即可以了 -->
+         	<list>  
+            	<ref local="daoAuthenticationProvider"/>
+         	</list>
+      	</property>
+      	<!--  Single sign on -->
+      	<property name="sessionController" ref="concurrentSessionController"></property>
+	</bean>
+
+
+     
+
+	<!-- 驗證提供者，指定使用資料庫來源中的驗證資訊 -->
+   	<bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">  
+        <property name="userDetailsService" ref="jdbcDaoImpl"/>
+        <!-- 使用cache 此處註解起來為關閉  -->
+        <!-- property name="userCache" ref="userCache"/ -->
+        <!-- 密碼加密 -->
+        <property name="passwordEncoder" ref="shaPasswordEncoder" />  
+    <!-- 與上述加密等效 <property name="passwordEncoder" ref="shaMessageDigestPasswordEncoder" /> --> 
+   	</bean>
+
+	<bean id="shaPasswordEncoder"  
+	    class="org.acegisecurity.providers.encoding.ShaPasswordEncoder">  
+	    <constructor-arg>  
+	        <value>256</value>  
+	    </constructor-arg>
+	    <property name="encodeHashAsBase64" value="false"></property>  
+	</bean>  
+	<!-- 與上述加密等效  
+	<bean id="shaMessageDigestPasswordEncoder"  
+	    class="org.acegisecurity.providers.encoding.MessageDigestPasswordEncoder">  
+	    <constructor-arg>  
+	        <value>SHA-256</value>  
+	    </constructor-arg>  
+	    <property name="encodeHashAsBase64" value="false"></property>  
+	</bean>  
+	 -->  
+
+
+   	<bean id="jdbcDaoImpl" class="org.acegisecurity.userdetails.jdbc.JdbcDaoImpl">
+    	<property name="dataSource" ref="dataSource"/>
+    	
+ 		<property name="usersByUsernameQuery">    
+	        <value>
+	        	SELECT userId,password,(CASE WHEN (status = 1 AND CONVERT(CHAR(10), GETDATE(), 111) BETWEEN enableStart AND enableEnd) THEN 1 ELSE 0 END) enabled FROM t_AdmPageUser WHERE userId=?
+	        </value>
+	        
+	    </property>       
+	    <property name="authoritiesByUsernameQuery">
+	        <value>  
+	             SELECT userId,userRole FROM t_AdmPageUser WHERE userId=? AND status = 1 AND CONVERT(CHAR(10), GETDATE(), 111) BETWEEN enableStart AND enableEnd 
+	        </value>
+
+	    </property>
+   	</bean>
+   	
+   	<bean id="userCacheBackend"
+		class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref local="cacheManager" />
+		</property>
+		<property name="cacheName">
+			<value>userCache</value>
+		</property>
+	</bean>
+
+	<bean id="userCache"
+		class="org.acegisecurity.providers.dao.cache.EhCacheBasedUserCache">
+		<property name="cache">
+			<ref local="userCacheBackend" />
+		</property>
+	</bean>
+	<!-- cache timeout參考
+	<cache name="userCache" maxElementsInMemory="300" eternal="false"
+		timeToIdleSeconds="600" timeToLiveSeconds="600" overflowToDisk="false"
+		diskPersistent="false" diskExpiryThreadIntervalSeconds="600" />
+	 -->
+   	<!-- 驗證提供者，指定使用記憶體來源中的驗證資訊
+   	<bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">  
+        <property name="userDetailsService" ref="inMemoryDaoImpl"/>
+   	</bean>
+     
+   	<bean id="inMemoryDaoImpl" class="org.acegisecurity.userdetails.memory.InMemoryDaoImpl">
+       <property name="userProperties">
+           <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+               <property name="location" value="/WEB-INF/users.properties" />
+           </bean>
+       </property>
+   </bean>
+   -->
+
+    <!-- FilterSecurityInterceptor 對 URI 進行保護 -->
+    <bean id="filterSecurityInterceptor"
+          class="org.acegisecurity.intercept.web.FilterSecurityInterceptor">
+        <!-- 驗證管理員 -->
+        <property name="authenticationManager" ref="authenticationManager" />
+        <!-- 授權管理員 -->
+        <property name="accessDecisionManager" ref="accessDecisionManager" />
+        <!-- property name="objectDefinitionSource">
+            <value>
+                CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+                PATTERN_TYPE_APACHE_ANT
+                /protected/**=ROLE_SUPERVISOR,ROLE_USER
+            </value>
+        </property -->
+	    <property name="objectDefinitionSource"  
+	        ref="rdbmsFilterInvocationDefinitionSource" />
+	    <!--  property name="observeOncePerRequest" value="false"/ -->
+    </bean>
+	  
+	<bean id="rdbmsFilterInvocationDefinitionSource"  
+	    class="com.salmat.security.RdbmsFilterInvocationDefinitionSource">  
+	    <property name="dataSource" ref="dataSource" />  
+	    <property name="webresdbCache" ref="webresCacheBackend" />  
+	    <property name="rolesUrlMappingQuery">
+	    	<value>
+	    		SELECT url,  roleList FROM t_AdmPageUserAuthority WHERE deleteDate is null ORDER BY id
+	    	</value>
+	    </property>
+	</bean>  
+	  
+	<bean id="webresCacheBackend"  
+	    class="org.springframework.cache.ehcache.EhCacheFactoryBean">  
+	    <property name="cacheManager">  
+	        <ref local="cacheManager" />  
+	    </property>  
+	    <property name="cacheName">  
+	        <value>webresdbCache</value>  
+	    </property>  
+	</bean>
+    
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"/>
+    
+    <!-- 授權管理員 -->
+    <bean id="accessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
+         <!-- 是否全部棄權時視為通過 -->
+         <property name="allowIfAllAbstainDecisions" value="false" />
+         <property name="decisionVoters">
+             <list>
+                 <bean class="org.acegisecurity.vote.RoleVoter" />
+             </list>
+         </property>
+    </bean>
+
+    <bean id="httpSessionContextIntegrationFilter"
+	  class="org.acegisecurity.context.HttpSessionContextIntegrationFilter" />
+ 
+    <!-- Filter Chain -->
+     <bean id="filterChainProxy" class="org.acegisecurity.util.FilterChainProxy">  
+       <property name="filterInvocationDefinitionSource">  
+          <value>  
+            CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON 
+            PATTERN_TYPE_APACHE_ANT 
+            /**=concurrentSessionFilter,httpSessionContextIntegrationFilter,authenticationProcessingFilter,exceptionTranslationFilter,filterSecurityInterceptor,logoutFilter
+         </value> 
+      </property> 
+    </bean>
+    
+	<bean id="concurrentSessionFilter" class="org.acegisecurity.concurrent.ConcurrentSessionFilter">
+		<property name="sessionRegistry" ref="sessionRegistry"></property>
+		<property name="expiredUrl"><value>/concurrentError.jspx</value></property>
+	</bean>
+	
+	<bean id="sessionRegistry" class="org.acegisecurity.concurrent.SessionRegistryImpl"></bean>
+	
+	<bean id="concurrentSessionController" class="org.acegisecurity.concurrent.ConcurrentSessionControllerImpl">
+		<property name="maximumSessions" value="70"></property>
+		<property name="sessionRegistry" ref="sessionRegistry"></property>
+		<!-- 
+			設定為true，若已有一用户登入，在另一個地方登入該用户時將拋出異常，而且無法登入
+			設定為false，若已有一用户登入，在另一個地方登入該用户時，前者會被踢掉
+		-->
+		<property name="exceptionIfMaximumExceeded" value="false"></property>
+	</bean>
+</beans> 

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+ "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+ "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config>
+	<managed-bean>
+     	<managed-bean-name>adminLoginBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AdminLoginBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+  	</managed-bean>
+	<managed-bean>
+     	<managed-bean-name>MenuBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.MenuBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+     	<managed-property>
+        	<property-name>type</property-name>  
+        	<value>admin</value>
+     	</managed-property>
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>authorityMaintainBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AuthorityMaintainBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>admMenuService</property-name>
+           	<value>#{admMenuService}</value>
+        </managed-property>
+  	</managed-bean>  	
+  	<managed-bean>
+     	<managed-bean-name>propertiesMaintainBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.PropertiesMaintainBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	<managed-bean>
+     	<managed-bean-name>unlockBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.UnlockBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	<managed-bean>
+     	<managed-bean-name>reportDetailBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.ReportDetailBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	<managed-bean>
+     	<managed-bean-name>noBankReceiptBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.NoBankReceiptBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	<managed-bean>
+     	<managed-bean-name>substractBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.SubstractBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>pdfViewQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.PdfViewQueryBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>checkResultQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.PdfViewQueryBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>bankReceiptBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.BankReceiptBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>bankReceiptReceiverBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.BankReceiptBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>areaBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AreaBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>afpQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AfpQueryBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	<!-- fxdms列印檔查詢 -->
+  	<managed-bean>
+     	<managed-bean-name>fxAfpQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.FxAfpQueryBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>  	
+  	
+  	<!-- fxdms打包資訊查詢 -->
+  	<managed-bean>
+     	<managed-bean-name>fxPackQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.FxAfpQueryBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 裝箱完成  -->
+  	<managed-bean>
+     	<managed-bean-name>packCompleteBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.PackCompleteBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 貨運狀況  -->
+  	<managed-bean>
+     	<managed-bean-name>packStatusBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.PackCompleteBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 驗單 -->
+  	<managed-bean>
+     	<managed-bean-name>checkPolicyBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.CheckPolicyBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 配表 -->
+  	<managed-bean>
+     	<managed-bean-name>matchPolicyBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.MatchPolicyBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 打包作業  -->
+  	<managed-bean>
+     	<managed-bean-name>packQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.FxAfpQueryBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- daily report -->
+  	<managed-bean>
+     	<managed-bean-name>dailyReportBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.DailyReportBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>		
+  	</managed-bean>
+  	
+  	<!-- 使用者歷程查詢  -->
+  	<managed-bean>
+     	<managed-bean-name>actionQueryBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.ActionQueryBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+		<!-- 透過Spring注入 -->
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>admUserService</property-name>
+           	<value>#{adminUserService}</value>
+        </managed-property>
+        <managed-property>
+           	<property-name>admMenuService</property-name>
+           	<value>#{admMenuService}</value>
+        </managed-property>		
+  	</managed-bean>
+	
+ 	<managed-bean>
+     	<managed-bean-name>adminUserMaintainBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AdminUserMaintainBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>adminUserService</property-name>
+           	<value>#{adminUserService}</value>
+        </managed-property>
+  	</managed-bean>
+  	
+  	<managed-bean>
+     	<managed-bean-name>adminUserEditBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AdminUserEditBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<managed-property>
+           	<property-name>maintainBean</property-name>
+           	<value>#{adminUserMaintainBean}</value>
+        </managed-property>
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>adminUserService</property-name>
+           	<value>#{adminUserService}</value>
+        </managed-property>
+		<managed-property>
+           	<property-name>passwordService</property-name>
+           	<value>#{passwordService}</value>
+        </managed-property>
+  	</managed-bean>
+	<managed-bean>
+     	<managed-bean-name>adminUserAddBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.AdminUserAddBean</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+           	<property-name>maintainBean</property-name>
+           	<value>#{adminUserMaintainBean}</value>
+        </managed-property>
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>adminUserService</property-name>
+           	<value>#{adminUserService}</value>
+        </managed-property>
+		<managed-property>
+           	<property-name>passwordService</property-name>
+           	<value>#{passwordService}</value>
+        </managed-property>
+  	</managed-bean>
+	<managed-bean>
+     	<managed-bean-name>profileEditBean</managed-bean-name>
+		<managed-bean-class>com.salmat.pas.beans.ProfileEditBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+		<!-- 透過Spring注入 -->
+		<managed-property>
+           	<property-name>adminUserService</property-name>
+           	<value>#{adminUserService}</value>
+        </managed-property>
+		<managed-property>
+           	<property-name>passwordService</property-name>
+           	<value>#{passwordService}</value>
+        </managed-property>
+  	</managed-bean>
+  	  	
+</faces-config>

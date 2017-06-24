@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	<tx:annotation-driven/>
+		<!-- Let pojo get ApplicationContext，初始化動作 -->
+	<bean id="contextHolder" class="com.salmat.util.ApplicationContextFactory"/>
+	
+	<bean id="admMenuService" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.salmat.pas.bo.AdmMenuService" >
+				<property name="admPageListDao">
+					<ref bean="admPageListDao"/>
+				</property>
+				<property name="admPageUserAuthorityDao">
+					<ref bean="admPageUserAuthorityDao"/>
+				</property>				
+			</bean>
+		</property>
+	</bean>	
+	<bean id="fileEncFactory" class="com.salmat.util.FileEncFactory" >
+	    <property name="publicKey">
+            <value>MIIBuDCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUAl2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoDgYUAAoGBAOrgpA4aq+erh9U+OnmTGWj5VBuuswsVmeZ/hqTektHDppCCnmHHiUCK9F7Y945U8algFRGMCqQ6Dadz0o/pwwl5YwafsDSMxxDH5CEyxYL7WG2lgnYupY7cJWdsffekwJh08ItfaM6obHfyD4AzKq8sYAE/25RRLMY4RbJoTFiY</value>
+        </property>
+	    
+	</bean>
+	
+
+	<!-- 密碼編碼方式，與applicationContext-acegi.xml對應 -->
+	<bean id="passwordService" class="com.salmat.pas.bo.PasswordService" >
+	    <property name="passwordEncoding">
+            <value>SHA-256</value>
+        </property>
+	    <property name="encodeHashAsBase64">
+            <value>false</value>
+        </property> 
+	</bean>
+	
+	
+	
+	<bean id="adminUserService" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="com.salmat.pas.bo.AdminUserService" >
+				<property name="adminUserDao">
+					<ref bean="adminUserDao"/>
+				</property>
+				<property name="adminUserDeleteDao">
+					<ref bean="adminUserDeleteDao"/>
+				</property>
+				<property name="adminUserRoleDao">
+					<ref bean="adminUserRoleDao"/>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- RMI設定 -->
+	<bean id="voServiceImpl" class="com.fxdms.rmi.service.impl.VoServiceImpl">
+ 
+    </bean>
+    <bean id="mbeanServer" class="java.lang.management.ManagementFactory" factory-method="getPlatformMBeanServer"/>
+    <!-- RMI Server setting -->
+    <bean id="VoServiceExporter" class="org.springframework.remoting.rmi.RmiServiceExporter" depends-on="schedulerService">
+          <property name="service">
+             <ref bean="voServiceImpl" />
+         </property>
+         <property name="serviceName">
+             <value>VoService</value>
+         </property>
+         <property name="serviceInterface">
+            <value>com.fxdms.rmi.service.VoService</value>
+         </property>                  
+         <property name="registryPort" value="1099"/>
+         <property name="servicePort" value="1099"/>
+                
+         <!-- property name="clientSocketFactory" ref="myRMIClientSocket"></property -->           
+     </bean>       
+     <!-- bean id="myRMIClientSocket" class="com.fxdms.rmi.service.MyRMISocket"></bean-->  
+    
+	
+	
+	<bean id="schedulerService" class="com.salmat.pas.bo.SchedulerService" />	   
+	
+	
+	<bean autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">   
+	        <property name="triggers">   
+	            <list>
+                    <!-- ref local="cronTrigger_Task_GpgListener" /-->	            	                                            
+                    <ref local="cronTrigger_Task_JobBagListener" />
+                    <ref local="cronTrigger_Task_DeleteListener" />
+                    <ref local="cronTrigger_Task_ErrorReport" />                    
+                    <ref local="cronTrigger_Task_DailyReport" />
+                    <ref local="cronTrigger_Task_Tp2Mail" />                    
+	            </list>   
+	        </property>
+	</bean>  
+	
+	
+	<!-- gpgFile listener五分鐘執行一次 -->
+    <bean id="cronTrigger_Task_GpgListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpgListener" />
+	   <property name="cronExpression" value="0 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?" />    
+	</bean>
+	<bean id="Task_GpgListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="gpgListener"/> 
+	   <property name="concurrent" value="false"/>
+	</bean>
+	
+	<!-- 工單狀況每小時時執行一次 -->
+    <bean id="cronTrigger_Task_JobBagListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_JobBagListener" />
+	   <property name="cronExpression" value="0 39 0,1,2,3,4,5,6,7,14,15,16,17,18,19,20,21,22,23 * * ?" /> 
+	</bean>
+	<bean id="Task_JobBagListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="jobBagListener"/> 
+	</bean>
+	
+	<!-- 每天15點15分執行daily report -->
+    <bean id="cronTrigger_Task_DailyReport"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_DailyReport" />
+	   <property name="cronExpression" value="0 15 15 * * ?" /> 
+	</bean>
+	<bean id="Task_DailyReport" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="dailyReport"/> 
+	</bean>
+	
+	<!-- 每天16點45分執行北二通知郵件 -->
+    <bean id="cronTrigger_Task_Tp2Mail"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_Tp2Mail" />
+	   <property name="cronExpression" value="0 45 16 * * ?" /> 
+	</bean>
+	<bean id="Task_Tp2Mail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="taipei2logisticReport"/> 
+	</bean>
+	
+	<!-- 每天20點30分執行刪除檔案 -->
+    <bean id="cronTrigger_Task_DeleteListener"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_DeleteListener" />
+	   <property name="cronExpression" value="0 30 20 * * ?" /> 
+	</bean>
+	<bean id="Task_DeleteListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="deleteListener"/> 
+	</bean>
+	
+	<!-- 每15分鐘email通知資料庫 -->
+    <bean id="cronTrigger_Task_ErrorReport"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ErrorReport" />
+	   <property name="cronExpression" value="0 3,18,33,48 * * * ?" /> 
+	</bean>
+	<bean id="Task_ErrorReport" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="targetObject" ref="schedulerService"/>
+	   <property name="targetMethod" value="errorReport"/> 
+	</bean>			
+	
+</beans>

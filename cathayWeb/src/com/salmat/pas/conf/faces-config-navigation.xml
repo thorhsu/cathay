@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faces-config PUBLIC
+ "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.1//EN"
+ "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
+
+<faces-config>
+   
+    <navigation-rule>
+        <from-view-id>/secure/system/adminUserMaintain.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/secure/profile/profileEdit.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/profile/profileEdit.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/profile/profileEdit.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/secure/system/userActionQuery.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/userActionQuery.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/userActionQuery.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/secure/system/rolesMaintain.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/rolesMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/rolesMaintain.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>toAdd</from-outcome>
+            <to-view-id>/secure/system/roleAdd.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>toEdit</from-outcome>
+            <to-view-id>/secure/system/roleEdit.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/secure/system/roleAdd.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/rolesMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/rolesAdd.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/preview/pdfViewQuery.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/pdfViewQuery.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/pdfViewQuery.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/preview/afpQuery.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/afpQuery.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/afpQuery.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+            
+    <navigation-rule>
+        <from-view-id>/preview/areaUpload.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/areaUpload.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/areaUpload.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/preview/dailyReportQuery.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/dailyReportQuery.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/dailyReportQuery.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/fxdms/afpQuery.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/afpQuery.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/afpQuery.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/fxdms/checkPolicy.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/checkPolicy.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/checkPolicy.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/preview/checkPolicy.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/checkPolicy.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/checkPolicy.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <navigation-rule>
+        <from-view-id>/fxdms/noBankReceipt.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/noBankReceipt.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/noBankReceipt.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <!-- 配表 -->
+    <navigation-rule>
+        <from-view-id>/fxdms/matchPolicy.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/matchPolicy.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/matchPolicy.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    <!-- 國壽人員查詢裝箱資料 -->
+    <navigation-rule>
+        <from-view-id>/preview/packStatus.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/preview/packStatus.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/preview/packStatus.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>pbDetail</from-outcome>
+            <to-view-id>/preview/checkPolicy.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>        
+    
+    
+    
+    <!-- 裝箱資料 -->
+    <navigation-rule>
+        <from-view-id>/fxdms/packPrepare.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/packPrepare.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/packPrepare.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>toEdit</from-outcome>
+            <to-view-id>/fxdms/editPackStatus.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>        
+    <navigation-rule>
+        <from-view-id>/fxdms/editPackStatus.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/packPrepare.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/editPackStatus.jsp</to-view-id>
+        </navigation-case>               
+    </navigation-rule>
+    
+    <!-- 裝箱掃描 -->
+    <navigation-rule>
+        <from-view-id>/fxdms/packScan.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/fxdms/packScan.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/fxdms/packScan.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download</from-outcome>
+            <to-view-id>/report/reportDownLoad.jsp</to-view-id>
+        </navigation-case>
+        <navigation-case>
+            <from-outcome>download2</from-outcome>
+            <to-view-id>/report/reportDownLoad2.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    
+    <navigation-rule>
+        <from-view-id>/secure/system/roleEdit.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/rolesMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/rolesEdit.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>    
+    
+
+
+    <navigation-rule>
+        <from-view-id>/secure/system/adminUserAdd.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/adminUserAdd.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/secure/system/adminUserEdit.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/adminUserEdit.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    
+    <navigation-rule>
+        <from-view-id>/secure/system/adminUserMaintain.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/adminUserMaintain.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/secure/system/propertiesMaintain.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/secure/system/propertiesMaintain.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/secure/system/propertiesMaintain.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>
+    
+    
+    <!-- 
+    <navigation-rule>
+        <from-view-id>/pages/login.jsp</from-view-id>
+        <navigation-case>
+        	<from-outcome>success</from-outcome>
+            <to-view-id>/pages/loginResult.jsp</to-view-id>
+ 		</navigation-case>
+ 		<navigation-case>
+            <from-outcome>failure</from-outcome>
+            <to-view-id>/pages/login.jsp</to-view-id>
+        </navigation-case>
+    </navigation-rule>   
+     -->
+    <!-- 控制所有url -->
+
+</faces-config>

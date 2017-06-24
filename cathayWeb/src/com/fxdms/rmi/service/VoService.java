@@ -1,0 +1,61 @@
+package com.fxdms.rmi.service;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.salmat.pas.vo.AfpFile;
+import com.salmat.pas.vo.ApplyData;
+import com.salmat.pas.vo.Area;
+import com.salmat.pas.vo.BankReceipt;
+import com.salmat.pas.vo.ImgFile;
+import com.salmat.pas.vo.PackStatus;
+import com.salmat.pas.vo.Properties;
+
+public interface VoService {
+   public boolean persist(Object obj); 
+   public boolean update(Object obj);
+   public boolean save(Object obj);
+   public ApplyData getApplyData(String oldBatchName);
+   public AfpFile getAfp(String newBatchName);
+   public Object get(Class inClass, Object obj);
+   public Properties getProperties();
+   public List<Area> getAreaList();
+   public Area getArea(String areaId);
+   public Map<String, Area> getCenterAreaMap();
+   public List<ImgFile> getImgFiles();    
+   public List<ImgFile> getImgFilesByNm(String imgFileNm);
+   public List<ImgFile> findByImage();
+   public List<ImgFile> findByLaw();
+   public List<ImgFile> findNormImage() throws Exception;
+   public List<ImgFile> findNormLaw() throws Exception ;
+   public List<ImgFile> findTestImage();
+   public List<ImgFile> findTestLaw();
+   public List<ImgFile> findGroupImage() throws Exception;
+   public List<ImgFile> findGroupLaw() throws Exception; 
+   public List<Integer> findAfpMaxSerialNo(Calendar cal, String center, String batchOrTest);
+   public List<Integer> findAfpMaxReceiptSerialNo(Calendar cal, String center, String batchOrTest);
+   public List<Long> findMaxBatNo();
+   public List<ApplyData> findByApplyNoAndPolicyNoAndCenter(String applyNo, String policyNo, String center, boolean receipt);
+   public List<ApplyData> findByApplyNoAndPolicyNoAndCenerCycle(Date cycleDate, String applyNo, String policyNo, String center, boolean receipt);
+   public List<ApplyData> findByApplyNoAndPolicyNoAndCenerCycleReprint(Date cycleDate, String applyNo, String policyNo, String center, boolean receipt, Integer reprint);
+   public Set<ApplyData> getApplyDataByNewBatchNm(String newBatchName);
+   public String getPdfPwd();
+   public List<AfpFile> findNotFeedBack();
+   public void updateAreaCenter(Map<String, String> areaMap);
+   public void deleteImg(String imgNm);
+   public Map<String, Integer> getReportNum(Set<String> packids);
+   public List<PackStatus> findNonReported();
+   public Map<String, Integer> generateReport(Set<String> newBatchNames);
+   public Set<ApplyData> getApplyDataNewBatchNm(String newBatchName);
+   public boolean deleteApplyData(ApplyData applyData);
+   public List<ApplyData> findForPdf(Date cycleDate);
+   public List<ApplyData> findPklike(String pkName, Boolean receipt, Boolean groupInsure);
+   public String updateArea(List<Area> areas);
+   public BankReceipt findBk(String bankReceiptId);
+   public List<AfpFile> getCycleDateAfpfiles(Date cycleDate); 
+   public void commonReport();
+   public void returnReport();
+}

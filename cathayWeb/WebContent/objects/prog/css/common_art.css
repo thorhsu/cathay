@@ -1,0 +1,12 @@
+@charset "utf-8";
+.storelink {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #7B9664;
+}
+.divStoreInfoOutline {
+	border: 1px dotted #BBCAAE;
+}
+#bgtable .main  .art_show  .img {
+	margin-left: 14px;
+}

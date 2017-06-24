@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	<tx:annotation-driven/>
+	
+    <bean id="sessionFactory"  
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"> 
+  
+        <property name="dataSource"> 
+            <ref bean="dataSource"/> 
+        </property> 
+        <property name="annotatedClasses">
+        <!-- 對應的vo類別 -->
+			<list>
+				<value>com.salmat.pas.vo.AdminUser</value>
+				<value>com.salmat.pas.vo.AdminUserHistory</value>
+				<value>com.salmat.pas.vo.AdminUserDelete</value>
+				<value>com.salmat.pas.vo.AdminUserRole</value>
+				<value>com.salmat.pas.vo.AdmPageUserAuthority</value>
+				<value>com.salmat.pas.vo.AdmPageList</value>
+				<value>com.salmat.pas.vo.ActionHistory</value>
+				<value>com.salmat.pas.vo.AfpFile</value>
+			    <value>com.salmat.pas.vo.ApplyData</value>
+				<value>com.salmat.pas.vo.ImgFile</value>
+				<value>com.salmat.pas.vo.Properties</value>
+				<value>com.salmat.pas.vo.ErrorReport</value>
+				<value>com.salmat.pas.vo.SysLog</value>
+				<value>com.salmat.pas.vo.Area</value>
+				<value>com.salmat.pas.vo.PackStatus</value>
+				<value>com.salmat.pas.vo.LogisticStatus</value>
+				<value>com.salmat.pas.vo.BankReceipt</value>
+			</list>
+        </property>
+        <!--此處用來定義hibernate的SessionFactory屬性 -->
+	    <property name="hibernateProperties">
+	        <props>
+	            <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+	            <prop key="hibernate.show_sql">false</prop>
+	            <prop key="hibernate.cache.use_query_cache">false</prop>
+	            <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.use_outer_join">true</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.connection.autocommit">true</prop>
+            </props> 
+        </property>
+    </bean>
+    
+    <bean id="sessionFactory2"  
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"> 
+        <property name="dataSource"> 
+            <ref bean="dataSource2"/> 
+        </property> 
+        <property name="annotatedClasses">
+        <!-- 對應的vo類別 -->
+			<list>
+				<value>com.salmat.pas.vo.JobBag</value>
+				<value>com.salmat.pas.vo.JobBagSplit</value>
+				<value>com.salmat.pas.vo.Sms</value>
+				<value>com.salmat.pas.vo.AcctItemFx</value>
+			</list>
+        </property>
+        <!--此處用來定義hibernate的SessionFactory屬性 -->
+	    <property name="hibernateProperties">
+	        <props>
+	            <prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+	            <prop key="hibernate.show_sql">false</prop>
+	            <prop key="hibernate.cache.use_query_cache">false</prop>
+	            <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.use_outer_join">true</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.connection.autocommit">true</prop>
+            </props> 
+        </property>
+    </bean>
+
+    <!-- Transaction Manager -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <!-- HibernateTransactionManager bean需要注入SessionFactory bean的引用-->
+        <property name="sessionFactory" ref="sessionFactory"/>
+   		<property name="nestedTransactionAllowed"><value>true</value></property>
+		<property name="rollbackOnCommitFailure"><value>true</value></property>
+
+    </bean>
+	<bean id="hibernateTemplate"
+		class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+	</bean>
+	<bean id="hibernateTemplate2"
+		class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory">
+            <ref bean="sessionFactory2"/>
+        </property>
+	</bean>
+	
+	<bean id="hibernateSessionFactory"
+		class="com.salmat.util.HibernateSessionFactory">
+		<property name="hibernateTemplate">
+            <ref bean="hibernateTemplate"/>
+        </property>
+        	<property name="hibernateTemplate2">
+            <ref bean="hibernateTemplate2"/>
+        </property>
+	</bean>
+	
+	
+	
+	
+	<!-- Transaction Proxy -->
+	<bean id="baseTransactionProxy" abstract="true"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+		</property>
+	</bean>
+	
+    <bean id="namingStrategy"
+          class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+        <property name="staticField">
+            <value>org.hibernate.cfg.ImprovedNamingStrategy.INSTANCE</value>
+        </property>
+   
+    </bean>
+
+    <bean id="extendedFinderNamingStrategy"
+        class="com.salmat.genericdao.finder.impl.ExtendedFinderNamingStrategy" />
+
+    <!-- Dao Layer generic config-->
+    <bean id="finderIntroductionAdvisor" class="com.salmat.genericdao.finder.impl.FinderIntroductionAdvisor"/>
+    <!-- 基本新刪修查的類別，若有客製需求，可新增一組 -->
+    <bean id="abstractDaoTarget"
+          class="com.salmat.genericdao.impl.GenericDaoHibernateImpl" abstract="true">
+        <property name="sessionFactory">
+            <ref bean="sessionFactory"/>
+        </property>
+        <property name="namingStrategy">
+            <ref bean="extendedFinderNamingStrategy" />
+        </property>
+    </bean>
+    
+    <bean id="abstractDao"
+          class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
+        <property name="interceptorNames">
+            <list>
+                <value>finderIntroductionAdvisor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--  Dao Layer instances -->
+    <bean id="adminUserDao" parent="abstractDao">
+        <property name="proxyInterfaces">
+            <value>com.salmat.pas.dao.AdminUserDao</value>
+        </property>
+        <property name="target">
+            <bean parent="abstractDaoTarget">
+                <constructor-arg>
+                    <value>com.salmat.pas.vo.AdminUser</value>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+    <bean id="adminUserDeleteDao" parent="abstractDao">
+        <property name="proxyInterfaces">
+            <value>com.salmat.pas.dao.AdminUserDeleteDao</value>
+        </property>
+        <property name="target">
+            <bean parent="abstractDaoTarget">
+                <constructor-arg>
+                    <value>com.salmat.pas.vo.AdminUserDelete</value>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+    <bean id="adminUserRoleDao" parent="abstractDao">
+        <property name="proxyInterfaces">
+            <value>com.salmat.pas.dao.AdminUserRoleDao</value>
+        </property>
+        <property name="target">
+            <bean parent="abstractDaoTarget">
+                <constructor-arg>
+                    <value>com.salmat.pas.vo.AdminUserRole</value>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+    <bean id="admPageUserAuthorityDao" parent="abstractDao">
+        <property name="proxyInterfaces">
+            <value>com.salmat.pas.dao.AdmPageUserAuthorityDao</value>
+        </property>
+        <property name="target">
+            <bean parent="abstractDaoTarget">
+                <constructor-arg>
+                    <value>com.salmat.pas.vo.AdmPageUserAuthority</value>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+    <!--  Dao Layer instances -->
+    <bean id="admPageListDao" parent="abstractDao">
+        <property name="proxyInterfaces">
+            <value>com.salmat.pas.dao.AdmPageListDao</value>
+        </property>
+        <property name="target">
+            <bean parent="abstractDaoTarget">
+                <constructor-arg>
+                    <value>com.salmat.pas.vo.AdmPageList</value>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+    
+    
+</beans>

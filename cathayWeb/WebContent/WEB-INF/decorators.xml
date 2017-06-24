@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<decorators defaultdir="/WEB-INF/_decorators">
+    <!-- 需要套版型的網頁或目錄 -->
+    <decorator name="main_secure" page="main_secure.jsp">
+        <pattern>/secure/*</pattern>
+        <pattern>/report/*</pattern>
+        <pattern>/preview/*</pattern>
+        <pattern>/fxdms/*</pattern>
+    </decorator>
+    <excludes>
+        <pattern>/login.jsp*</pattern>
+    </excludes>
+    <!-- 不需要套版型的網頁或目錄 -->
+    <!--  
+    <excludes>
+        <pattern>/secure/reports/exportCSV.jsp*</pattern>
+    </excludes>
+    -->
+</decorators>

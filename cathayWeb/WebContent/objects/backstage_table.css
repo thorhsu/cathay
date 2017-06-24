@@ -1,0 +1,24 @@
+#backStage {
+	border: 1px dashed #ADBB82;
+	text-align: left;
+}
+#backStage td {
+	border: 1px solid #FDFDFD;
+	padding: 1px;
+}
+
+#backStage .fieldtitle {
+	font-size: 13px;
+	background-color: #F3E3D6;
+	text-align: center;
+	vertical-align: middle;
+	width: 100px;
+	font-weight: bold;
+}
+#backStage .fieldtitle2 {
+	font-size: 13px;
+	background-color: #F9F5D0;
+	text-align: left;
+	vertical-align: middle;
+	font-weight: bold;
+}

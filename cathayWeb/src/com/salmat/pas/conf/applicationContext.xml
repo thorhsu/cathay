@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	<tx:annotation-driven />
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/cathay" />
+		<property name="lookupOnStartup" value="false" />
+		<property name="cache" value="true" />
+		<property name="proxyInterface" value="javax.sql.DataSource" />
+	</bean>
+	<bean id="dataSource2" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/jbm2"/>
+        <property name="lookupOnStartup" value="false"/>
+        <property name="cache" value="true" />
+        <property name="proxyInterface"  value="javax.sql.DataSource" />
+	</bean>
+	
+
+	<!--  bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource" destroy-method="close" >
+		<property name="alias" value="fubonPool" />
+		<property name="driver" value="net.sourceforge.jtds.jdbc.Driver" />
+		<property name="driverUrl" value="jdbc:jtds:sqlserver://127.0.0.1/pas" />
+		<property name="user" value="sa" />		  
+		<property name="password" value="passw0rd" />
+		<property name="driverUrl" value="jdbc:jtds:sqlserver://10.113.139.89/pas" />
+		<property name="user" value="pas" />		  
+		<property name="password" value="1qazxsw2" /-->
+		
+				   
+		<!-- 自動偵察各個連線狀態的時間間隔(毫秒)，偵測到空閒連線即回收，超時即摧毀 -->
+		<!-- property name="houseKeepingSleepTime" value="30000" /> 
+		<property name="maximumConnectionLifetime" value="60000" /> 
+		<property name="maximumActiveTime" value="30000" / -->
+		 <!--最少保持的空閒連線數-->
+		<!-- property name="prototypeCount" value="5" /-->
+		<!-- 允許最大連線數,超過此連線數，若還有請求時，則排在佇列中 -->
+		<!-- property name="maximumConnectionCount" value="50" / -->
+		<!-- 最小連線數 -->
+		<!-- property name="minimumConnectionCount" value="5" /-->
+		<!-- 最大的等待請求數，即因没有空閒連接可分配而在佇列等候的最大請求數，超過此數量的用户連接將不會被接受 -->      
+        <!-- property name="simultaneousBuildThrottle" value="20" />
+		<property name="houseKeepingTestSql" value="select getdate()"/>
+	</bean-->
+	
+	
+	<bean id="placeholderConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/com/salmat/pas/conf/staticData.properties</value>				
+			</list>
+		</property>
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+	</bean>
+	<bean id="constant" class="com.salmat.pas.conf.Constant" lazy-init="default">        
+	    <property name="publicKey" value="${publicKey}" />
+	</bean>
+</beans>

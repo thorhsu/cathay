@@ -1,0 +1,364 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+    
+    <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>               
+                <value>classpath:staticData.properties</value>
+            </list>
+        </property>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+    <bean id="voServiceProxy" 
+          class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <property name="serviceUrl">
+            <value>rmi://172.16.16.109:1099/VoService</value>
+            <!-- value>rmi://127.0.0.1/VoService</value-->
+        </property>
+        <property name="refreshStubOnConnectFailure">
+            <value>true</value>
+        </property>        
+        <property name="serviceInterface">
+            <value>com.fxdms.rmi.service.VoService</value>
+        </property>        
+    </bean>   
+    
+    <bean id="constant" class="com.fxdms.cathy.conf.Constant" lazy-init="default">        
+	    <property name="privateKey" value="${privateKey}" />
+	    <property name="publicKey" value="${publicKey}" />
+	</bean>
+	
+	<bean id="SchedulerService" class="com.fxdms.cathy.task.SchedulerService" />
+	<bean autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">   
+	        <property name="triggers">   
+	            <list>    	            	                 
+	                <ref local="cronTrigger_Task_fileDispatcher" />
+	                <ref local="cronTrigger_Task_GpFileDispatcher" />
+	                <ref local="cronTrigger_Task_NotPrintReceipt" />  
+                    <ref local="cronTrigger_Task_ImgUpdater" />
+                    <ref local="cronTrigger_Task_GpImgUpdater" />
+                    <ref local="cronTrigger_Task_PolicyMerger" />
+                    <ref local="cronTrigger_Task_ReceiptMerger" />                                        
+                    <ref local="cronTrigger_Task_GpPolicyMerger" />
+                    <ref local="cronTrigger_Task_GpReceiptMerger" />                    
+                    <ref local="cronTrigger_Task_ZipListener" />
+                    <ref local="cronTrigger_Task_deleteListener" />                    
+                    <ref local="cronTrigger_Task_AfpListener" />
+                    <ref local="cronTrigger_Task_ReturnAfpListener" />                    
+                    <ref local="cronTrigger_Task_ReturnDispatcher" />                                         
+                    <ref local="cronTrigger_Task_SftpListener" />          
+                    <ref local="cronTrigger_Task_FeedbackTimer" />
+                    <ref local="cronTrigger_Task_AddressProcesser" />    
+                    <ref local="cronTrigger_Task_PdfSplit" />                                                                 
+                    <ref local="cronTrigger_Task_InputDate" />                    
+                    <ref local="cronTrigger_Task_GpInputDate" />
+                    <ref local="cronTrigger_Task_PolicyBookCounter" />
+                    <ref local="cronTrigger_Task_GpPdfSorter" />
+                    <ref local="cronTrigger_Task_GpTestDispatcher" />                    
+                    <ref local="cronTrigger_Task_PdfConverter" />                    
+	            </list>   
+	        </property>
+	</bean>
+	
+	<!-- 團險PDF派送更新每二分鐘執行 -->
+    <bean id="cronTrigger_Task_GpPdfSorter"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpPdfSorter" />
+	   <property name="cronExpression" value="33 0/2 * * * ?" /> 
+	</bean>
+	<bean id="Task_GpPdfSorter" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpPdfSorter"/> 
+	</bean>  
+
+    <!-- 單位與服務中心更新每分鐘執行 -->
+    <bean id="cronTrigger_Task_AddressProcesser"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_AddressProcesser" />
+	   <property name="cronExpression" value="2 * * * * ?" /> 
+	</bean>
+	<bean id="Task_AddressProcesser" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="addressProcesser"/> 
+	</bean>
+		
+	
+    <!-- 保單分派每兩分鐘都執行一次 -->
+    <bean id="cronTrigger_Task_fileDispatcher"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_fileDispatcher" />
+	   <property name="cronExpression" value="16 0/2 * * * ?" /> 
+	</bean>
+	<bean id="Task_fileDispatcher" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="fileDispatcher"/> 
+	</bean>
+	
+	<!-- 不進行列印的簽收單每兩分鐘都執行一次 -->
+    <bean id="cronTrigger_Task_NotPrintReceipt"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_NotPrintReceipt" />
+	   <property name="cronExpression" value="36 3,9,15,21,27,33,39,45,51,57 * * * ?" /> 
+	</bean>
+	<bean id="Task_NotPrintReceipt" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="notPrintReceipt"/> 
+	</bean>
+	
+	
+	<!-- 團險保單分派每分鐘都執行一次，19:00~20:00不執行-->
+    <bean id="cronTrigger_Task_GpFileDispatcher"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpFileDispatcher" />
+	   <property name="cronExpression" value="15 * 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,23 * * ?" /> 
+	</bean>
+	<bean id="Task_GpFileDispatcher" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpFileDispatcher"/> 
+	</bean>
+	
+	<!-- 團險保單測試每五分鐘執行一次，19:00~20:00不執行-->
+    <bean id="cronTrigger_Task_GpTestDispatcher"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpTestDispatcher" />
+	   <property name="cronExpression" value="49 2,7,12,17,22,27,32,37,42,47,52,57 * * * ?" /> 
+	</bean>
+	<bean id="Task_GpTestDispatcher" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpTestDispatcher"/> 
+	</bean>
+	
+	<!-- pdf轉tiff每3分鐘執行一次-->	
+    <bean id="cronTrigger_Task_PdfConverter"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_PdfConverter" />
+	   <property name="cronExpression" value="57 5/3 * * * ?" /> 
+	</bean>
+	<bean id="Task_PdfConverter" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="pdfToTifConverter"/> 
+	</bean>
+	
+	
+	<!-- 影像更新每分鐘都執行 -->
+	<bean id="cronTrigger_Task_ImgUpdater"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ImgUpdater" />
+	   <property name="cronExpression" value="21 3/2 * * * ?" /> 
+	</bean>
+	<bean id="Task_ImgUpdater" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="imgUpdater"/> 
+	</bean>
+	
+	<!-- 團險影像更新每分鐘都執行 -->
+	<bean id="cronTrigger_Task_GpImgUpdater"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpImgUpdater" />
+	   <property name="cronExpression" value="45 9/2 * * * ?" /> 
+	</bean>
+	<bean id="Task_GpImgUpdater" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpImgUpdater"/> 
+	</bean>
+	
+	<!-- 保單文字檔融合每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_PolicyMerger"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_PolicyMerger" />
+	   <property name="cronExpression" value="8 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?" /> 
+	</bean>
+	<bean id="Task_PolicyMerger" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="policyMerger"/> 
+	</bean>
+	
+	<!-- 簽收回條文字檔融合每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_ReceiptMerger"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ReceiptMerger" />
+	   <property name="cronExpression" value="38 2,7,12,17,22,27,32,37,42,47,52,57 * * * ?" /> 
+	</bean>
+	<bean id="Task_ReceiptMerger" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="receiptMerger"/> 
+	</bean>
+	
+	<!-- 團險保單文字檔融合每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_GpPolicyMerger"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpPolicyMerger" />
+	   <property name="cronExpression" value="6 1,6,11,16,21,26,31,36,41,46,51,56 * * * ?" /> 
+	</bean>
+	<bean id="Task_GpPolicyMerger" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpPolicyMerger"/> 
+	</bean>
+	
+	<!-- 團險簽收回條文字檔融合每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_GpReceiptMerger"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpReceiptMerger" />
+	   <property name="cronExpression" value="36 3,8,13,18,23,28,33,38,43,48,53,58 * * * ?" /> 
+	</bean>
+	<bean id="Task_GpReceiptMerger" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpReceiptMerger"/> 
+	</bean>
+	
+	<!-- AFP檔是否產生及解析log檔每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_AfpListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_AfpListener" />
+	   <property name="cronExpression" value="11 2/5 * * * ?" /> 	   
+	</bean>
+	<bean id="Task_AfpListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="afpListener"/> 
+	</bean>
+	
+	<!-- AFP檔是否產生及解析log檔每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_ReturnAfpListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ReturnAfpListener" />
+	   <property name="cronExpression" value="31 2/5 * * * ?" /> 	   
+	</bean>
+	<bean id="Task_ReturnAfpListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="returnAfpListener"/> 
+	</bean>
+	
+	<!-- 檔案加密傳輸每五分鐘進行一次 -->
+	<bean id="cronTrigger_Task_ZipListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ZipListener" />
+	   <property name="cronExpression" value="17 3,8,13,18,23,28,33,38,43,48,53,58 * * * ?" /> 
+	</bean>
+	<bean id="Task_ZipListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="zipListener"/> 
+	</bean>
+	
+	
+	<!-- 每天20:20執行 -->
+    <bean id="cronTrigger_Task_deleteListener"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_deleteListener" />
+	   <property name="cronExpression" value="47 20 20 * * ?" /> 
+	</bean>
+	<bean id="Task_deleteListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="deleteListener"/> 
+	</bean>
+	
+    <!-- return dispatcher每分鐘進行一次，18和19時不進行 -->
+	<bean id="cronTrigger_Task_ReturnDispatcher"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_ReturnDispatcher" />
+	   <property name="cronExpression" value="10 * 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,20,21,22,23 * * ?" /> 
+	</bean>
+	<bean id="Task_ReturnDispatcher" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="returnDispatcher"/> 
+	</bean>
+	
+	<!-- sftp listener每分鐘進行一次 -->
+	<bean id="cronTrigger_Task_SftpListener"
+	   class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_SftpListener" />
+	   <property name="cronExpression" value="20 * * * * ?" /> 
+	</bean>
+	<bean id="Task_SftpListener" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="sftpListener"/> 
+	</bean>
+    	
+    	
+    <!-- 每天8點到下午四點15分執行回饋檔產生 -->
+    <bean id="cronTrigger_Task_FeedbackTimer"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_FeedbackTimer" />
+	   <property name="cronExpression" value="7 15 8,9,10,11,12,13,14,15,16,17,18,19 * * ?" /> 
+	</bean>
+	<bean id="Task_FeedbackTimer" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="feedbackTimer"/> 
+	</bean>
+	
+	
+	<!-- 每天8點到下午19點15分執行pdf檔切割 -->
+    <bean id="cronTrigger_Task_PdfSplit"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_PdfSplit" />
+	   <property name="cronExpression" value="1 15 8,9,10,11,12,13,14,15,16,17,18,19 * * ?" /> 
+	</bean>
+	<bean id="Task_PdfSplit" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="pdfSplitter"/> 
+	</bean>
+	
+	
+    <!-- input date parse -->
+    <!-- 每分鐘執行 input date -->
+    <bean id="cronTrigger_Task_InputDate"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_InputDate" />
+	   <property name="cronExpression" value="19 * * * * ?" /> 
+	</bean>
+	<bean id="Task_InputDate" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="inputDateParser"/> 
+	</bean>
+	
+	<!-- input date parse -->
+    <!-- 每分鐘執行 input date -->
+    <bean id="cronTrigger_Task_GpInputDate"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_GpInputDate" />
+	   <property name="cronExpression" value="0 * * * * ?" /> 
+	</bean>
+	<bean id="Task_GpInputDate" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="gpInputDateParser"/> 
+	</bean>
+	
+	
+	
+    <!-- 每07:00 計算檔案內容，用來核對 -->
+    <bean id="cronTrigger_Task_PolicyBookCounter"  class="org.springframework.scheduling.quartz.CronTriggerBean">
+	   <property name="jobDetail" ref="Task_PolicyBookCounter" />
+	   <property name="cronExpression" value="3 0 7 * * ?" /> 
+	</bean>
+	<bean id="Task_PolicyBookCounter" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	   <property name="concurrent" value="false"/>	
+	   <property name="targetObject" ref="SchedulerService"/>
+	   <property name="targetMethod" value="policyBookCounter"/> 
+	</bean>
+</beans>
